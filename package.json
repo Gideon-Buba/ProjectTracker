@@ -1,0 +1,21 @@
+{
+  "name": "ProjectTracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "nodemon"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.13.11",
+    "express": "^4.21.2",
+    "mongoose": "^8.12.2",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  },
+  "private": true
+}
