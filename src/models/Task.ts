@@ -46,5 +46,16 @@ const taskSchema = new Schema<ITask>({
     ],
 });
 
+// Custom validator to calculate duration
+taskSchema.pre('validate', function (next) {
+    if (this.startDate && this.endDate) {
+        const start = new Date(this.startDate);
+        const end = new Date(this.endDate);
+        this.duration = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)); // Convert to days
+    }
+    next();
+});
+
+
 const Task = model<ITask>("Task", taskSchema);
 export { Task, ITask };
