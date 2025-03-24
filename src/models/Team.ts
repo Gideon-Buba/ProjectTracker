@@ -1,15 +1,17 @@
-import {model, Schema, Types} from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
 interface ITeam extends Document {
     name: string;
-    project: Types.ObjectId; // Reference to Project
-    members: Types.ObjectId[]; // References to Members
+    project: Schema.Types.ObjectId;
+    description?: string;
+    members?: Schema.Types.ObjectId[];
 }
 
 const teamSchema = new Schema<ITeam>({
     name: { type: String, required: true },
     project: { type: Schema.Types.ObjectId, ref: "Project", required: true },
-    members: [{ type: Schema.Types.ObjectId, ref: "Member" }]
+    description: { type: String },
+    members: [{ type: Schema.Types.ObjectId, ref: "User" }] // Assuming members are users
 });
 
 const Team = model<ITeam>("Team", teamSchema);

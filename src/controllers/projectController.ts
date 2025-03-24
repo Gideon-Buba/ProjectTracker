@@ -3,13 +3,11 @@ import { Project } from "../models/Project";
 import { Team } from "../models/Team";
 import mongoose from "mongoose";
 
-
 // Create a new project
 export const createProject = async (req: Request, res: Response) => {
     try {
         // Check if a project with the same name already exists
         const existingProject = await Project.findOne({ name: req.body.name });
-
         if (existingProject) {
             return res.status(400).json({ error: "Project with this name already exists" });
         }
@@ -27,7 +25,7 @@ export const getProjects = async (req: Request, res: Response) => {
     try {
         const projects = await Project.find().populate("teams");
         res.status(200).json(projects);
-    } catch (error: any) {  // ✅ Explicitly type error as `any`
+    } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };
@@ -35,12 +33,12 @@ export const getProjects = async (req: Request, res: Response) => {
 // Get a single project by ID
 export const getProjectById = async (req: Request, res: Response): Promise<Response | void> => {
     try {
-        const project = await Project.findById(req.params.id);
+        const project = await Project.findById(req.params.id).populate("teams");
         if (!project) {
             return res.status(404).json({ message: "Project not found" });
         }
         return res.status(200).json(project);
-    } catch (error: any) {  // ✅ Explicitly type error as `any`
+    } catch (error: any) {
         return res.status(500).json({ error: error.message });
     }
 };
@@ -48,7 +46,7 @@ export const getProjectById = async (req: Request, res: Response): Promise<Respo
 export const addTeamToProject = async (req: Request, res: Response) => {
     try {
         const { projectId } = req.params;
-        const { name, members } = req.body;
+        const { name, members = [] } = req.body; // ✅ Default members to an empty array if not provided
 
         // Validate project existence
         const project = await Project.findById(projectId);
@@ -60,13 +58,13 @@ export const addTeamToProject = async (req: Request, res: Response) => {
         const newTeam = new Team({
             name,
             members: members.map((memberId: string) => new mongoose.Types.ObjectId(memberId)), // Convert to ObjectId
-            project: projectId // Assign project ID
+            project: new mongoose.Types.ObjectId(projectId) // Assign project ID
         });
 
         await newTeam.save();
 
-        // Add the new team to the project
-        project.teams.push(newTeam._id);
+        // Add the team to the project's teams array
+        project.teams.push(newTeam._id as mongoose.Schema.Types.ObjectId); // Explicitly cast to ObjectId
         await project.save();
 
         res.status(200).json(project);
@@ -75,3 +73,24 @@ export const addTeamToProject = async (req: Request, res: Response) => {
     }
 };
 
+// Add members to an existing team
+export const addMembersToTeam = async (req: Request, res: Response) => {
+    try {
+        const { teamId } = req.params;
+        const { members } = req.body;
+
+        // Validate team existence
+        const team = await Team.findById(teamId);
+        if (!team) {
+            return res.status(404).json({ message: "Team not found" });
+        }
+
+        // Update the team's members array
+        team.members = members.map((memberId: string) => new mongoose.Types.ObjectId(memberId)); // Convert to ObjectId
+        await team.save();
+
+        res.status(200).json(team);
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+};
