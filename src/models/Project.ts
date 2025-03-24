@@ -7,7 +7,7 @@ interface IProject extends Document {
 }
 
 const projectSchema = new Schema<IProject>({
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     description: { type: String },
     teams: [{ type: Schema.Types.ObjectId, ref: "Team" }] // Array of team references
 });

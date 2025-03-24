@@ -7,30 +7,15 @@ import mongoose from "mongoose";
 // Create a new project
 export const createProject = async (req: Request, res: Response) => {
     try {
-        const { name, description, teams } = req.body;
+        // Check if a project with the same name already exists
+        const existingProject = await Project.findOne({ name: req.body.name });
 
-        // Create the project first
-        const project = new Project({ name, description });
+        if (existingProject) {
+            return res.status(400).json({ error: "Project with this name already exists" });
+        }
+
+        const project = new Project(req.body);
         await project.save();
-
-        // Create teams dynamically and store their IDs
-        const createdTeams = await Promise.all(
-            teams.map(async (team: { name: string; members: string[] }) => {
-                const newTeam = new Team({
-                    name: team.name,
-                    members: team.members.map((memberId) => new mongoose.Types.ObjectId(memberId)), // Convert to ObjectId
-                    project: project._id // Assign project ID
-                });
-
-                await newTeam.save();
-                return newTeam._id; // Return the team ID
-            })
-        );
-
-        // Update the project with the created team IDs
-        project.teams = createdTeams;
-        await project.save();
-
         res.status(201).json(project);
     } catch (error: any) {
         res.status(500).json({ error: error.message });
