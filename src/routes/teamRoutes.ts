@@ -1,10 +1,8 @@
-import express, {RequestHandler} from "express";
-import { createTeam, getTeams, getTeamById } from "../controllers/teamController";
+import express, { RequestHandler } from "express";
+import { addMembersToTeam } from "../controllers/projectController";
 
 const router = express.Router();
 
-router.post("/", createTeam);
-router.get("/", getTeams);
-router.get("/:id", getTeamById as RequestHandler);
+router.put("/:teamId/members", addMembersToTeam as RequestHandler);
 
 export default router;
