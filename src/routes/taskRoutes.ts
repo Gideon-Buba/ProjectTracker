@@ -1,10 +1,9 @@
-import express, {RequestHandler} from "express";
-import { createTask, getTasks, getTaskById } from "../controllers/taskController";
+import express from "express";
+import { createNewTask, getTask } from "../controllers/taskController";
 
 const router = express.Router();
 
-router.post("/", createTask);
-router.get("/", getTasks);
-router.get("/:id", getTaskById as RequestHandler);
+router.post("/", createNewTask);
+router.get("/:id", getTask);
 
 export default router;
