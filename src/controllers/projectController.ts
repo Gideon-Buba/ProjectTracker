@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Project } from "../models/Project";
 import { Team } from "../models/Team";
+import { Member } from "../models/Member";
 import mongoose from "mongoose";
 
 // Create a new project
@@ -77,7 +78,7 @@ export const addTeamToProject = async (req: Request, res: Response) => {
 export const addMembersToTeam = async (req: Request, res: Response) => {
     try {
         const { teamId } = req.params;
-        const { members } = req.body;
+        const { memberNames } = req.body;
 
         // Validate team existence
         const team = await Team.findById(teamId);
@@ -85,11 +86,20 @@ export const addMembersToTeam = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Team not found" });
         }
 
+        // Find members by names
+        const members = await Member.find({ name: { $in: memberNames } });
+        if (members.length !== memberNames.length) {
+            return res.status(404).json({ message: "One or more members not found" });
+        }
+
         // Update the team's members array
-        team.members = members.map((memberId: string) => new mongoose.Types.ObjectId(memberId)); // Convert to ObjectId
+        team.members = members.map((member) => member._id as mongoose.Schema.Types.ObjectId);
         await team.save();
 
-        res.status(200).json(team);
+        // Populate the members field to include member names
+        const populatedTeam = await Team.findById(teamId).populate("members");
+
+        res.status(200).json(populatedTeam);
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
