@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getUserById } from "../api/api";
+import { getUserById } from "../api/user.api";
 
 const UserProfile = () => {
   const [userId, setUserId] = useState("");
