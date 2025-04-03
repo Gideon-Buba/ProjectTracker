@@ -1,14 +1,15 @@
-import CreateTask from "./components/CreateTask";
 import Register from "./components/Register";
 import UserProfile from "./components/UserProfile";
+import CreateProject from "./components/CreateProject";
+import Sidebar from "./components/Sidebar";
 
 function App() {
   return (
     <div>
-      <h1>User Management</h1>
+      <Sidebar />
+      <CreateProject />
       <Register />
       <UserProfile />
-      <CreateTask />
     </div>
   );
 }

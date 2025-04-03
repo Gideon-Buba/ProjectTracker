@@ -26,3 +26,8 @@ export const getProjectById = async (id: number): Promise<Project | null> => {
   );
   return rows.length > 0 ? (rows[0] as Project) : null;
 };
+
+export const getAllProjects = async (): Promise<Project[]> => {
+  const [rows] = await pool.execute<RowDataPacket[]>("SELECT * FROM projects");
+  return rows as Project[];
+};
