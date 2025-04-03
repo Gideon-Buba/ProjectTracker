@@ -15,9 +15,9 @@ The Project Management Tracker is a web application designed to help me manage p
 
 ## Technology Stack
 
-- **Backend**: Node.js, Express, MongoDB
+- **Backend**: Node.js, Express, MySQL
 - **Frontend**: React
-- **Database**: MongoDB
+- **Database**: MySQL
 
 [//]: # "- **Authentication**: JWT (optional)"
 
